@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Form</title>
+    <link rel="stylesheet" href="task1.css">
+</head>
+<body>
+    <form id="form">
+        <div class="form-content">
+            <h2>Feedback Form</h2>
+
+            <label for="name">Name<span>*</span></label>
+            <input type="text" id="name" requiredpattern="[A-Za-z\s]+" title="Name can only contain alphabets and spaces" placeholder="Enter your name">
+            <br><br>
+
+            <label for="feedback">Feedback<span>*</span></label>
+            <textarea id="feedback" requiredpattern="[A-Za-z\s]+" title="Name can only contain alphabets and spaces" placeholder="Please give your valuable feedback here"></textarea>
+            <br><br>
+
+            <div class="buttons">
+                <button type="button" id="thumbs-up">&#128077;</button>
+                <button type="button" id="thumbs-down">&#128078;</button>
+            </div>
+            <p id="errormsg"></p>
+        </div>
+    </form>
+
+    
+    <script src="task1.js"></script>
+</body>
+</html>
