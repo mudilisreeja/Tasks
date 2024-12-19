@@ -1,0 +1,1 @@
+This is a feedback form which contains name and feedback and two buttons.once u enter name feedback and click on submit button it will gives you the message of Thankyou for your valuable feedback along with the entered name.when u click on the thumbs down button it will ask you feedback for improvement.
