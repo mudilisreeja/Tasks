@@ -1,0 +1,90 @@
+span{
+    color:red;
+}
+body {
+    font-family: Arial, sans-serif;
+    background-color:rgb(125, 111, 111);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.form-content {
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        width: 100%;
+        max-width: 400px;
+        height:400px;
+        justify-content: center;
+        align-items: center;
+        display: block;
+}
+h2{
+    text-align:center;
+    color:rgb(77, 71, 71);
+    margin-top: 10px;
+    font-weight: bold;
+}
+label{
+    display:block;
+    margin-bottom:6px;
+    font-weight:bold ;
+}
+input, textarea {
+    width: 100%;
+    max-width: 300px;
+    padding: 8px;
+    margin-bottom: 12px;
+    border: 1px solid black;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1rem;
+}
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+button{
+    font-size :2rem;
+    color:ffff;
+    background-color: #3e638a;
+    border:none ;
+    padding: 10px,20px;
+    border-radius: 4px;
+    margin:6px;
+    transition: font-size 0.3s ease-in-out;
+    text-align: center;
+    
+    
+}
+#thumbs-up:hover {
+    background-color: blue;
+}
+#thumbs-down:hover{
+    background-color: blue;
+
+}
+
+textarea{
+    height: 100px;
+    
+    
+
+}
+text area::placeholder-shown{
+    text-align: center;
+    font-style: italic;
+}
+#errormsg{
+    
+    color: red;
+    text-align: center;
+    font-size: 0.9rem;
+    margin-top: 10px;
+    
+}
