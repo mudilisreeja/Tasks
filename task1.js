@@ -1,12 +1,18 @@
 const form = document.getElementById("form");
 const nameField = document.getElementById("name");
 const feedbackField = document.getElementById("feedback");
-const errorMsg = document.getElementById("errormsg");
+const errorMsgName = document.getElementById("errormsg-name");
+const errorMsgFeedback = document.getElementById("errormsg-feedback");
 const alphabetRegex = /^[A-Za-z\s]+$/; 
 
-errorMsg.textContent = "";
+errorMsgName.textContent = "";
+errorMsgFeedback.textContent = "";
 
 document.getElementById("thumbs-up").addEventListener("click", (e) => {
+    e.preventDefault();
+    validateForm();
+});
+document.getElementById("thumbs-down").addEventListener("click", (e) => {
     e.preventDefault();
     validateForm();
 });
@@ -18,36 +24,42 @@ document.getElementById("form").addEventListener("submit", (e) => {
 function validateForm() {
     const nameValue = nameField.value.trim();
     const feedbackValue = feedbackField.value.trim();
-
-    // Name section
-    if (nameValue === "") {
-        errorMsg.textContent = "Name cannot be empty!";
-        return;
-    } else if (!alphabetRegex.test(nameValue)) {
-        errorMsg.textContent = "Name can only contain alphabets.";
-        return;
-    }
-
-    // Feedback section
-    if (feedbackValue === "") {
-        errorMsg.textContent = "Feedback cannot be empty.";
-        return;
-    } else if (!alphabetRegex.test(feedbackValue)) {
-        errorMsg.textContent = "Feedback can only contain alphabets.";
-        return;
-    }
-
     
-    alert(`Thank you for your feedback, ${nameValue}!`);
-    errorMsg.textContent = ""; 
-    form.reset();
+    // Reset error messages
+    errorMsgName.textContent = "";
+    errorMsgFeedback.textContent = "";
+
+    let isValid = true;
+
+    // Name validation
+    if (nameValue === "") {
+        errorMsgName.textContent = "Name cannot be empty!";
+        isValid = false;
+    } else if (!alphabetRegex.test(nameValue)) {
+        errorMsgName.textContent = "Name can only contain alphabets.";
+        isValid = false;
+    }
+
+    // Feedback validation
+    if (feedbackValue === "") {
+        errorMsgFeedback.textContent = "Feedback cannot be empty.";
+        isValid = false;
+    } else if (!alphabetRegex.test(feedbackValue)) {
+        errorMsgFeedback.textContent = "Feedback can only contain alphabets.";
+        isValid = false;
+    }
+
+    if (isValid) {
+        // If the form is valid, show the success message
+        document.getElementById("thumbs-up").addEventListener("click", () => {
+            alert(`Thank you ${nameValue}! for your feedback.`);
+            form.reset();
+        });
+
+        // If the form is invalid, show the sorry message
+        document.getElementById("thumbs-down").addEventListener("click", () => {
+            alert("We are sorry! We will try to make things better.");
+            form.reset();
+        });
+    }
 }
-
-document.getElementById("thumbs-down").addEventListener("click", () => {
-    alert("We are sorry! Please share your feedback to help us improve.");
-    errorMsg.textContent = ""; 
-    form.reset();
-
-});
-errorMsg.textContent = ""; 
-form.reset();
