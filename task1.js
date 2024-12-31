@@ -3,25 +3,53 @@ const nameField = document.getElementById("name");
 const feedbackField = document.getElementById("feedback");
 const errorMsgName = document.getElementById("errormsg-name");
 const errorMsgFeedback = document.getElementById("errormsg-feedback");
-const alphabetRegex = /^[A-Za-z\s]+$/; 
+const thumbsUpButton = document.getElementById("thumbs-up");
+const thumbsDownButton = document.getElementById("thumbs-down");
+const alphabetRegex = /^[A-Za-z\s]+$/;
 
 errorMsgName.textContent = "";
 errorMsgFeedback.textContent = "";
 
-document.getElementById("thumbs-up").addEventListener("click", (e) => {
+// Disable the buttons 
+thumbsUpButton.disabled = true;
+thumbsDownButton.disabled = true;
+
+
+thumbsUpButton.addEventListener("click", (e) => {
     e.preventDefault();
-    validateForm();
+    validateForm(true); 
 });
-document.getElementById("thumbs-down").addEventListener("click", (e) => {
+
+thumbsDownButton.addEventListener("click", (e) => {
     e.preventDefault();
-    validateForm();
+    validateForm(false); 
 });
-document.getElementById("form").addEventListener("submit", (e) => {
+
+// Event listener for form submit
+form.addEventListener("submit", (e) => {
     e.preventDefault();
     validateForm();
 });
 
-function validateForm() {
+
+nameField.addEventListener("input", checkFormFields);
+feedbackField.addEventListener("input", checkFormFields);
+
+function checkFormFields() {
+    const nameValue = nameField.value.trim();
+    const feedbackValue = feedbackField.value.trim();
+
+    
+    if (nameValue !== "" && feedbackValue !== "") {
+        thumbsUpButton.disabled = false;
+        thumbsDownButton.disabled = false;
+    } else {
+        thumbsUpButton.disabled = true;
+        thumbsDownButton.disabled = true;
+    }
+}
+
+function validateForm(isThumbsUp = null) {
     const nameValue = nameField.value.trim();
     const feedbackValue = feedbackField.value.trim();
     
@@ -50,16 +78,17 @@ function validateForm() {
     }
 
     if (isValid) {
-        // If the form is valid, show the success message
-        document.getElementById("thumbs-up").addEventListener("click", () => {
-            alert(`Thank you ${nameValue}! for your feedback.`);
-            form.reset();
-        });
 
-        // If the form is invalid, show the sorry message
-        document.getElementById("thumbs-down").addEventListener("click", () => {
+        if (isThumbsUp) {
+            alert(`Thank you ${nameValue}! for your feedback.`);
+        } else if (isThumbsUp === false) {
             alert("We are sorry! We will try to make things better.");
-            form.reset();
-        });
+        }
+
+        
+        form.reset();
+        
+        thumbsUpButton.disabled = true;
+        thumbsDownButton.disabled = true;
     }
 }
