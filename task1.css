@@ -33,7 +33,6 @@ body {
         border-radius: 8px;
         width: 100%;
         max-width: 400px;
-        height:400px;
         justify-content: center;
         align-items: center;
         display: block;
@@ -74,6 +73,7 @@ button{
     margin:6px;
     transition: font-size 0.3s ease-in-out;
     text-align: center;
+
     
     
 }
@@ -101,5 +101,6 @@ text area::placeholder-shown{
     text-align: center;
     font-size: 0.9rem;
     margin-top: 10px;
+    max-width: 100%;
     
 }
