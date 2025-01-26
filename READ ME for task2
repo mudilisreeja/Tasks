@@ -1,0 +1,44 @@
+A simple API built using Express.js and MySQL to manage employee data. It supports basic CRUD (Create, Read, Update) operations.
+
+Features
+GET / - Fetches all employee records from the employees table.
+POST / - Adds a new employee to the employees table.
+PUT /:employee_id - Updates an existing employee  details by their employee_id.
+
+Technologies used
+Node.js - JavaScript runtime for the server.
+Express.js - Web framework for Node.js.
+MySQL - Relational database to store employee data.
+
+Setup & Installation
+Follow these steps to set up the project locally:
+1. Clone the Repository
+2.install dependencies by npm install
+3.CREATE DATABASE Assesment;
+4.CREATE TABLE employees (
+    employee_id INT PRIMARY KEY,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    email VARCHAR(100),
+    department_id INT);
+5.INSERT values in the above table
+6.create a database connection with host username and password .
+
+HOW IT WORKS:
+1. run the code in terminal by using node task2.js.then it will show message connected and server running on port.
+2.TO check it locally use the postman tool
+3.select the GET method with the http://localhost5000 and select BODY raw json format and click send
+then we can get all the employee details from the employee table in json format
+4. select the POST method with http://localhost5000/ and select json format and enter the employee details which you want to insert in the table  and click send
+5.you will get message employee inserted message.if you didnot enter details in body it will show error please provide employee details
+6.select the PUT method with the http://localhost5000/(any employye_id)which you want to update enter here.and enter the employee details in the body and click send
+7.if you provide employee details in correct format. you will get message employee details updated successfully.otherwise it will show error msg like please provide employee details.
+
+NOTE:ALL above methods will work for employees table .because in the code table name mentioned was employees.if you change the table name in the code. and test  locally in postman then it will show 
+the error message.. table doesnot exists.
+
+
+
+
+
+
