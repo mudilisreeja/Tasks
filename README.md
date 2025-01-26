@@ -1,1 +1,29 @@
-This is a feedback form which contains name, feedback and one thumbs-up button and one thumbs-down button.once u enter name feedback with alphabets and click on submit button it will gives you the message of Thankyou for your valuable feedback along with the entered name.whwn you give the input fields with numbers or if you left the fields empty .it will show you the error messages that Name cannot be empty or Name should contain alphabets.similarly for feedback too.when u click on the thumbs down button without filling the details it will show the error messages like Name and feedback cant be empty.when you entered with valid inputs and click the thumbs-down button then it will gives you the alert we are sorry!we will try to make things better
+Open the index.html file in your web browser to view the feedback form.
+
+HOW IT WORKS:
+
+NAME INPUT FIELD:
+. The user enters their name.
+. If the name is empty or contains anything other than alphabets, an error message is shown.
+
+FEEDBACK INPUT FIELD:
+. The user enters their feedback.
+. If the feedback is empty or contains anything other than alphabets, an error message is displayed.
+
+BUTTONS:
+. Thumbs-Up : When clicked, if both name and feedback are valid, a thank-you message is shown with the entered name. If not valid, an error message is shown.
+. Thumbs-Down : When clicked, if both name and feedback are valid, an alert with a "We are sorry!" message appears. If not valid, an error message is shown.
+
+VALIDATION RULES:
+. Name: Must only contain alphabets (no numbers or special characters) and cannot be empty.
+. Feedback: Cannot be empty.
+
+ERROR MESSAGES:
+. "Name cannot be empty."
+. "Name should contain alphabets only."
+. "Feedback cannot be empty."
+
+TECHNOLOGIES USED:
+HTML: For the structure of the form.
+CSS: For styling the form elements.
+JavaScript: For form validation and handling button interactions.
