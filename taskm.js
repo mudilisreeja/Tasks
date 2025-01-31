@@ -1,5 +1,3 @@
-<<<<<<< Updated upstream
-=======
 const express=require('express');
 const mysql=require('mysql2');
 const PORT=3000;
@@ -137,4 +135,3 @@ app1.use((err, req, res, next) => {
 app1.listen(PORT,()=>{
     console.log(`server is running on http://localhost:${PORT}`);
 });
->>>>>>> Stashed changes
