@@ -1,0 +1,347 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  background-color: rgb(207, 202, 202);
+  background-image: url('https://images.pexels.com/photos/1181406/pexels-photo-1181406.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'); 
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  font-family: Arial, sans-serif;
+  height: 100%;
+}
+
+/* Navbar */
+.navbar {
+  background-color: green;
+  color: white;
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  height: 60px;
+}
+
+.navbar .navbar-heading {
+  margin: 0;
+  font-size: 25px;
+}
+
+.container.mt-5 {
+  padding-top: 20px;
+}
+
+/* Employee & Department boxes */
+.box1 {
+  background-color: green;
+  color: white;
+  padding: 15px 20px;
+  border-radius:5px solid black;
+  text-align: center;
+  cursor: pointer;
+  font-size: 22px;
+  transition: 0.3s;
+  margin: 10px 0;
+  width: 100%;
+  margin-top: 30px;
+}
+
+
+.icon-container {
+  text-align: center;
+  font-size: 50px;
+  color: #1e68b6; 
+  margin-top: 120px;
+  
+}
+/* Employee section buttons */
+#employeeSection .row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 50px; 
+  margin-top: 20px;
+}
+
+/* Action buttons */
+.box {
+  background-color: green;
+  color: white;
+  padding: 15px 40px;
+  border-radius: 5px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 18px;
+  transition: 0.3s;
+  min-width: 220px;
+  text-align: center;
+}
+
+
+
+.box:hover, .box1:hover {
+  background-color: darkgreen;
+}
+
+
+/* Employee Forms */
+.form-container {
+  display: none;
+  background-color: white;
+  padding: 30px;
+  border-radius: 10px;
+  margin-top: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+h3 {
+  text-align: center;
+  font-size: 22px;
+  margin-bottom: 15px;
+  color: green;
+}
+
+input {
+  font-size: 14px;
+  display: block;
+  margin: 10px 0;
+  padding: 8px 12px; 
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  height: 35px;
+}
+
+input:focus {
+  border-color: green;
+  outline: none;
+}
+.button-container {
+  text-align: center;
+  margin-top: 20px;
+}
+#Submitbutton {
+  background-color: green;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 5px;
+  transition: 0.3s;
+  padding: 4px 8px;
+  align-items: center;
+  justify-content: center;
+}
+
+#submitbutton:hover {
+  background-color: darkgreen;
+}
+
+
+/* Message Boxes */
+.message {
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 4px;
+  display: none;
+}
+
+.message.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.message.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* Employee Table */
+#employeeTable {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 150px;
+  table-layout: fixed; 
+  background-color: white;
+  font-size: 14px; 
+}
+#employeeTable thead{
+  background-color: #007bff;
+
+}
+
+th, td {
+  border: 1px solid #0d0c0c;
+  padding: 4px; 
+  text-align: left;
+  white-space: nowrap; 
+}
+
+/* Adjust  column widths */
+th:nth-child(1), td:nth-child(1) { width: 40px; } 
+th:nth-child(2), td:nth-child(2) { width: 80px; }  
+th:nth-child(3), td:nth-child(3) { width: 80px; }  
+th:nth-child(4), td:nth-child(4) { width: 120px; } 
+th:nth-child(5), td:nth-child(5) { width: 80px; } 
+th:nth-child(6), td:nth-child(6) { width: 30px; } 
+
+th {
+  background-color: white;
+  color: black;
+}
+
+tr:nth-child(even) {
+  background-color: grey;
+}
+
+/* Buttons inside Table */
+td .action-buttons {
+  display: flex;
+  gap: 4px; 
+  justify-content: center; 
+  font-size: 10px;
+  border-radius: 3px;
+  border: none;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+
+/* Edit & Delete buttons */
+td .action-buttons {
+  display: flex;
+  gap: 4px; 
+  justify-content: center; 
+}
+
+#editbtn {
+  background-color: #ffc107;
+  color: black;
+}
+
+#editbtn:hover {
+  background-color: #e0a800;
+}
+
+#deletebtn {
+  background-color: #dc3545;
+  color: white;
+}
+#deletebtn:hover {
+  background-color: #c82333;
+}
+
+#employeeResults {
+  display: none;
+}
+
+.search-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+
+.search-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+#departmentResults {
+  margin-top: 20px;
+}
+
+/* Department Table */
+#departmentTable {
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  table-layout: auto;
+  width: 100%;
+}
+
+#departmentTable th:nth-child(1), #departmentTable td:nth-child(1) { width: 20px; }
+#departmentTable th:nth-child(2), #departmentTable td:nth-child(2) { width: 60px; }
+#departmentTable th:nth-child(3), #departmentTable td:nth-child(3) { width: 30px; }
+#departmentTable thead {
+  background-color: #007bff;
+  color: white;
+  text-align: left;
+}
+
+#departmentTable th, 
+#departmentTable td {
+  max-width: 40px;
+  padding: 4px;
+  border-bottom: 1px solid #ddd;
+    
+}
+
+#departmentTable tr:hover {
+  background-color: #f1f1f1;
+}
+
+#departmentTable button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+#departmentTable .Edit {
+  background-color: #ffc107;
+  color: black;
+}
+
+#departmentTable .Edit:hover {
+  background-color: #e0a800;
+}
+
+#departmentTable .Delete {
+  background-color: #dc3545;
+  color: white;
+}
+
+#departmentTable .Delete:hover {
+  background-color: #c82333;
+}
+#departmentTable{
+  th:nth-child(1),td:nth-child(1) { width: 20px; }
+  th:nth-child(2),td:nth-child(2) { width: 80px; }
+  th:nth-child(3),td:nth-child(3) { width: 40px; }
+}  
+#createDepartmentContainer {
+  display: none; /* Initially hidden */
+  border: 1px solid #ccc;
+  padding: 15px;
+  width: 300px;
+  background: #f9f9f9;
+  margin-top: 10px;
+}
+.alert {
+  padding: 10px;
+  margin-top: 20px;
+  border-radius: 5px;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+
+
+
+
