@@ -86,12 +86,13 @@
     <div id="updateEmployee" class="form-container" style="display: none;">
         <h3>Update Employee</h3>
         <form id="updateEmployeeForm">
-            <input type="text" id="employee_id_get" name="employee_id" placeholder="Employee ID" required readonly >
+            <input type="text" id="employee_id_get" name="employee_id" placeholder="Employee ID" required readonly>
             <input type="text" id="first_name_update" name="first_name" placeholder="First Name">
             <input type="text" id="last_name_update" name="last_name" placeholder="Last Name">
             <input type="text" id="email_update" name="email" placeholder="Email" required readonly>
             <input type="text" id="department_name_update" name="department_name" placeholder="Department Name">
             <button type="submit">Update Employee</button>
+            <button type="button" onclick="closeUpdateForm()">Cancel</button>
         </form>
     </div>
 
@@ -148,6 +149,7 @@
             <input type="text" id="department_id" placeholder="Department ID*" required readonly>
             <input type="text" id="department_name" placeholder="Department Name*" required>
             <button type="submit">Update Department</button>
+            <button type="button" onclick="closeUpdateDepartmentForm()">Cancel</button>
         </form>
         <p id="successMessage" style="display: none; color: green;"></p>
     </div>

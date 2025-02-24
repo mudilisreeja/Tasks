@@ -222,23 +222,23 @@ td .action-buttons {
   justify-content: center; 
 }
 
-#editbtn {
-  background-color: #ffc107;
-  color: black;
-}
-
-#editbtn:hover {
-  background-color: #e0a800;
-}
-
-#deletebtn {
-  background-color: #dc3545;
+.edit-btn {
+  background-color: #4CAF50; /* Green */
   color: white;
 }
-#deletebtn:hover {
-  background-color: #c82333;
+
+.edit-btn:hover {
+  background-color: #45a049; 
 }
 
+.delete-btn {
+  background-color: #f44336; /* Red */
+  color: white;
+}
+.delete-btn:hover {
+  background-color: #d32f2f;
+}
+ 
 #employeeResults {
   display: none;
 }
@@ -308,12 +308,12 @@ td .action-buttons {
   background-color: #e0a800;
 }
 
-#departmentTable .Delete {
+#departmentTable .delete-btn {
   background-color: #dc3545;
   color: white;
 }
 
-#departmentTable .Delete:hover {
+#departmentTable .delete-btn:hover {
   background-color: #c82333;
 }
 #departmentTable{
@@ -340,7 +340,6 @@ td .action-buttons {
   color: #155724;
   border: 1px solid #c3e6cb;
 }
-
 
 
 
