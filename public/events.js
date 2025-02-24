@@ -249,7 +249,7 @@ document.getElementById('createDepartmentForm').addEventListener('submit', funct
 });
 document.getElementById('getDepartmentButton').addEventListener('click', function () {
 
-    deartmentResults.style.display = 'block';
+    departmentResults.style.display = 'block';
 
     fetchDepartmentData();
 });
@@ -322,4 +322,218 @@ function deleteDepartment(button) {
     } else {
         alert("Deletion canceled. Department was not removed.");
     }
+}
+//update employee
+// Function to handle "Edit" button click
+function editEmployee(button) {
+    const employeeId = button.getAttribute('data-id'); 
+    console.log("Clicked Edit Button:", button); // Debugging
+    console.log("Extracted Employee ID:", employeeId); 
+
+    if (!employeeId) {
+        console.error(" Error: Employee ID is missing.");
+        alert("Error: Employee ID not found.");
+        return;
+    }
+
+    fetch(`http://localhost:5000/api/employees/${employeeId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(employeeData => {
+            console.log("✔ Fetched Employee Data:", employeeData);
+        
+            // If backend returns an array, extract the first item
+            const employee = Array.isArray(employeeData) ? employeeData[0] : employeeData;
+        
+            if (!employee || !employee.employee_id) {
+                alert(' Employee data is incorrect or missing.');
+                return;
+            }
+        
+            document.getElementById('employee_id_get').value = employee.employee_id || '';
+            document.getElementById('first_name_update').value = employee.first_name || '';
+            document.getElementById('last_name_update').value = employee.last_name || '';
+            document.getElementById('email_update').value = employee.email || '';
+            document.getElementById('department_name_update').value = employee.department_name || '';
+        
+            openUpdateForm();
+        })
+        
+        .catch(error => {
+            console.error('Error fetching employee data:', error);
+            alert('An error occurred while fetching employee data.');
+        });
+}
+
+// Function to open update form
+function openUpdateForm() {
+    document.getElementById('updateEmployee').style.display = 'block'; 
+}
+
+// Function to close update form
+function closeUpdateForm() {
+    document.getElementById('updateEmployee').style.display = 'none'; 
+}
+
+// Function to handle form submission for updating an employee
+document.getElementById('updateEmployeeForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const employeeId = document.getElementById('employee_id_get').value;
+    const firstName = document.getElementById('first_name_update').value;
+    const lastName = document.getElementById('last_name_update').value;
+    const departmentName = document.getElementById('department_name_update').value;
+
+    if (!employeeId) {
+        console.error(" Error: Employee ID is missing.");
+        alert(" Cannot update: Employee ID is missing.");
+        return;
+    }
+
+    const data = { first_name: firstName, last_name: lastName, department_name: departmentName };
+
+    fetch(`http://localhost:5000/api/employees/${employeeId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.status === 'success') {
+            alert(result.message);
+            closeUpdateForm();
+            fetchEmployeeData(); 
+        } else {
+            alert(` Update Failed: ${result.message}`);
+        }
+    })
+    .catch(error => {
+        console.error(" Error updating employee:", error);
+        alert("An error occurred while updating the employee.");
+    });
+});
+
+// Function to fetch and display employees
+function fetchEmployeeData() {
+    fetch('http://localhost:5000/api/employees')
+        .then(response => response.json())
+        .then(data => {
+            const tableBody = document.querySelector('#employeeTable tbody');
+            tableBody.innerHTML = '';
+
+            if (data.length > 0) {
+                data.forEach(employee => {
+                    console.log("✔ Employee Data:", employee);
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${employee.employee_id}</td>
+                        <td>${employee.first_name}</td>
+                        <td>${employee.last_name}</td>
+                        <td>${employee.email}</td>
+                        <td>${employee.department_name}</td>
+                        <td>
+                            <button class="edit-btn" data-id="${employee.employee_id}" onclick="editEmployee(this)">Edit</button>
+                            <button class="delete-btn" data-id="${employee.employee_id}" onclick="deleteEmployee(this)">Delete</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+        })
+        .catch(error => console.error(" Error fetching employee data:", error));
+}
+
+
+//Update Department
+// Function to handle "Edit" button click
+function editDepartment(button) {
+    const departmentId = button.getAttribute('data-id');
+    console.log("Clicked Edit Button for Department ID:", departmentId);
+
+    fetch(`http://localhost:5000/api/departments/${departmentId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(result => {
+            console.log("Fetched Department Data:", result);
+
+            if (result.department_id) {
+                // Populate the update form
+                document.getElementById('department_id').value = result.department_id;
+                document.getElementById('department_name').value = result.department_name;
+                console.log("Populated form with Department Data:", result);
+                console.log("Input Field Value After Populating:", document.getElementById('department_name').value);
+
+                // Show the update form
+                document.getElementById('updateDepartment').style.display = 'block';
+            } else {
+                alert('Department not found.');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching department data:', error);
+            alert('An error occurred while fetching department data.');
+        });
+}
+
+// Log input field changes
+document.getElementById('department_name').addEventListener('input', function (event) {
+    console.log("Input Field Value Changed:", event.target.value);
+});
+
+// Handle update form submission
+document.getElementById('updateDepartmentForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    const departmentId = document.getElementById('department_id').value;
+    const departmentName = document.getElementById('department_name').value.trim();
+    console.log("Department Name from Input Field:", departmentName);
+
+    console.log("Submitting update for Department ID:", departmentId, "New Name:", departmentName);
+
+    if (!departmentName) {
+        alert("Department name cannot be empty.");
+        return;
+    }
+
+    const data = { department_name: departmentName };
+    console.log("Payload:", JSON.stringify(data));
+
+    fetch(`http://localhost:5000/api/departments/${departmentId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(result => {
+        console.log("Update Result:", result);
+        if (result.status === 'success') {
+            alert(result.message);
+            closeUpdateDepartmentForm();
+            fetchDepartmentData(); // Refresh department list
+        } else {
+            alert(result.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error updating department:', error);
+        alert('An error occurred while updating the department.');
+    });
+});
+
+// Function to close the update form
+function closeUpdateDepartmentForm() {
+    document.getElementById('updateDepartment').style.display = 'none';
 }
