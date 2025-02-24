@@ -2,11 +2,21 @@ const express = require('express');
 const path = require('path');
 const mysql = require('mysql2/promise');
 const js2xmlparser = require('js2xmlparser');
+const { error } = require('console');
 const PORT = 5000;
 const app1 = express();
+const cors = require('cors');
+app1.use(cors()); 
+
 app1.use(express.json());
 require('dotenv').config();
 const tableName="employees";
+app1.use(express.static(path.join(__dirname, 'public')));
+
+// Define your routes
+app1.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'api.html'));
+});
 
 
 // Database connection pools for different databases
@@ -142,6 +152,13 @@ app1.post('/api/employees', validateEmployeeData, async (req, res) => {
         });
     } catch (err) {
         console.error('Error inserting an employee:', err);
+        if (err.code === 'ER_DUP_ENTRY') {
+            return res.status(400).json({
+                status: "error",
+                error_code: "ER_DUP_ENTRY",
+                message: "Duplicate email address. Please use a different email."
+            });
+        }
         res.status(500).json({
             status: "error",
             error_code: "INTERNAL_SERVER_ERROR",
@@ -150,10 +167,9 @@ app1.post('/api/employees', validateEmployeeData, async (req, res) => {
         });
     }
 });
-app1.get('/',(req,res)=>{
-    res.sendFile(path.join(__dirname,'public','nodedb.html'));
-})
+
 // Read employee by their columns using GET method
+// Get all employees
 app1.get("/api/employees", formatResponse, async (req, res) => {
     const { employee_id, first_name, last_name, email, department_name } = req.query;
 
@@ -204,6 +220,34 @@ app1.get("/api/employees", formatResponse, async (req, res) => {
             status: "error",
             error_code: "INTERNAL_SERVER_ERROR",
             message: "Error fetching employees"
+        });
+    }
+});
+
+// Route 2: Get a specific employee by employee_id
+app1.get("/api/employees/:employee_id", formatResponse, async (req, res) => {
+    const { employee_id } = req.params; // Get employee_id from route params
+
+    let queryBase = "SELECT * FROM employees WHERE employee_id = ?";
+
+    try {
+        const [result] = await employeePool.query(queryBase, [employee_id]);
+
+        if (result.length === 0) {
+            return res.status(404).json({
+                status: "error",
+                error_code: "NOT_FOUND",
+                message: `Employee with ID ${employee_id} not found`
+            });
+        }
+        console.log("Employee result:", result);
+        res.formatResponse(result);
+    } catch (err) {
+        console.error('Error fetching employee:', err);
+        res.status(500).json({
+            status: "error",
+            error_code: "INTERNAL_SERVER_ERROR",
+            message: "Error fetching employee"
         });
     }
 });
@@ -282,7 +326,6 @@ app1.put('/api/employees/:employee_id', async (req, res) => {
     }
 });
 
-
 // Delete employee by DELETE method
 app1.delete("/api/employees/:employee_id", async (req, res) => {
     const { employee_id } = req.params;
@@ -339,15 +382,22 @@ app1.post('/api/departments', async (req, res) => {
         const [result] = await departmentsPool.query(insertQuery, [department_name]);
         res.status(201).json({
             status: "success",
-            message: `Department "${department_name}" created successfully with department_id: ${result.insertId}`
+            message: ` created successfully with department_id: ${result.insertId}`
         });
     } catch (err) {
         console.error('Error creating department:', err);
+        if (err.code === 'ER_DUP_ENTRY') { // Handle duplicate entry
+            return res.status(400).json({
+                status: "error",
+                error_code: "DUPLICATE_ENTRY",
+                message: "Department already exists"
+            });
+        }
+
         res.status(500).json({
             status: "error",
             error_code: "INTERNAL_SERVER_ERROR",
-            message: "Error creating department",
-            sql_error: err.message
+            message: "Error creating department"
         });
     }
 });
@@ -381,7 +431,7 @@ app1.get("/api/departments/:department_id", async (req, res) => {
 
     try {
         
-        const [result] = await departmentsPool.query("SELECT * FROM departments WHERE department_id = ?", [department_id]);
+        const [result] = await departmentsPool.query("SELECT * FROM department_db.departments WHERE department_id = ?", [department_id]);
 
         if (result.length === 0) {
             return res.status(404).json({
@@ -410,41 +460,93 @@ app1.put('/api/departments/:department_id', async (req, res) => {
     if (!department_name) {
         return res.status(400).json({
             status: "error",
-            error_code: "INVALID_DEPARTMENT_NAME",
             message: "Department name is required"
         });
     }
 
-    const updateQuery = `UPDATE departments SET department_name = ? WHERE department_id = ?`;
+    const connection = await departmentsPool.getConnection();
 
     try {
-        const [result] = await departmentsPool.query(updateQuery, [department_name, department_id]);
+        await connection.beginTransaction(); // Start transaction
 
-        if (result.affectedRows === 0) {
+        // Check if the new department name already exists
+        const [existingDepartment] = await connection.query(
+            "SELECT * FROM department_db.departments WHERE department_name = ? AND department_id != ?",
+            [department_name, department_id]
+        );
+
+        if (existingDepartment.length > 0) {
+            await connection.rollback();
+            return res.status(400).json({
+                status: "error",
+                message: `Department name '${department_name}' already exists`
+            });
+        }
+
+        // ✅ Step 1: Update department name (employees will update automatically)
+        const updateDepartmentQuery = `UPDATE department_db.departments SET department_name = ? WHERE department_id = ?`;
+        const [departmentUpdateResult] = await connection.query(updateDepartmentQuery, [department_name, department_id]);
+
+        if (departmentUpdateResult.affectedRows === 0) {
+            await connection.rollback();
             return res.status(404).json({
                 status: "error",
-                error_code: "NOT_FOUND",
                 message: `Department with ID ${department_id} not found`
             });
         }
 
+        await connection.commit(); // Commit transaction
+
+        // Fetch updated department data
+        const [updatedDepartment] = await connection.query(
+            "SELECT * FROM department_db.departments WHERE department_id = ?",
+            [department_id]
+        );
+
         res.status(200).json({
             status: "success",
-            message: `Department with ID ${department_id} successfully updated`
+            message: `Department updated successfully`,
+            data: updatedDepartment[0]
         });
+
     } catch (err) {
+        await connection.rollback();
         console.error('Error updating department:', err);
+
         res.status(500).json({
             status: "error",
-            error_code: "INTERNAL_SERVER_ERROR",
             message: "Error updating department"
         });
+    } finally {
+        connection.release();
     }
 });
 
-// Delete department from departments_db
-app1.delete("/api/departments/:department_id", async (req, res) => {
-    const { department_id } = req.params;
+// Delete department 
+app1.delete("/api/departments/:department_id?", async (req, res) => {
+    
+    let { department_id } = req.params;
+
+    
+    if (!department_id && req.body.department_id) {
+        department_id = req.body.department_id;
+    }
+
+    
+    if (!department_id) {
+        return res.status(400).json({
+            status: "error",
+            error_code: "MISSING_DEPARTMENT_ID",
+            message: "dept_id missing"
+        });
+    }
+    if (isNaN(department_id)) {
+        return res.status(400).json({
+            status: "error",
+            error_code: "INVALID_DEPARTMENT_ID",
+            message: "Please provide a valid department_id"
+        });
+    }
 
     const deleteQuery = "DELETE FROM departments WHERE department_id = ?";
 
@@ -472,13 +574,16 @@ app1.delete("/api/departments/:department_id", async (req, res) => {
         });
     }
 });
+
 app1.use((err, req, res, next) => {
     console.error('Unhandled error:', err);
     res.status(500).json({
         status: "error",
         error_code: "INTERNAL_SERVER_ERROR",
-        message: "An unexpected error occurred"
+        message: "An unexpected error occurred",
+        error:err.message
     });
+    
 });
 
 app1.listen(PORT, () => {
