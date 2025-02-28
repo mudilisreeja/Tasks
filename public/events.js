@@ -199,59 +199,43 @@ function deleteEmployee(button) {
 
 
 //create department
-function openDepartmentForm(formId) {
-    document.getElementById('createDepartmentContainer').style.display = 'block';
-}
-document.getElementById('createDepartmentForm').addEventListener('submit', function (e) {
-    e.preventDefault(); // Prevent default form submission
+document.getElementById('createDepartmentForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const departmentName = document.getElementById('department_name');
 
-    const departmentName = document.getElementById('departmentname').value;
-    const submitButton = document.getElementById('addDepartmentBtn');
+    if (!departmentName) {
+        alert('Department Name is required.');
+        departmentName.focus();
+        return;
+    }
 
-    // Disable the button and show loading state
-    submitButton.disabled = true;
-    submitButton.textContent = 'Creating...';
+    const departmentData = {
+        department_name: departmentName.value
+    };
 
-    fetch('/api/departments', {
+    // Send POST request to server
+    fetch('/api/department', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ department_name: departmentName }),
+        body: JSON.stringify(departmentData)
     })
-    .then(response => {
-        if (!response.ok) {
-            return response.json().then(err => { throw err; });
+    .then(response => response.json())
+    .then(data => {
+        if (data.status==='success') {
+            alert("Department created successfully!");
+        } else {
+            alert("Error creating department.");
         }
-        return response.json();
-    })
-    .then(result => {
-        document.getElementById('responseMessage').innerHTML = `
-            <div class="alert alert-success">${result.message}</div>
-        `;
-
-        document.getElementById('createDepartmentForm').reset();
-
-        setTimeout(() => {
-            document.getElementById('createDepartmentContainer').style.display = 'none';
-        }, 2000);
     })
     .catch(error => {
-        document.getElementById('responseMessage').innerHTML = `
-            <div class="alert alert-danger">${error.message || 'An error occurred while creating the department.'}</div>
-        `;
-    })
-    .finally(() => {
-
-        submitButton.disabled = false;
-        submitButton.textContent = 'Create Department';
+        console.error("Error:", error);
+        alert("An error occurred. Please try again.");
     });
-});
-document.getElementById('getDepartmentButton').addEventListener('click', function () {
 
-    departmentResults.style.display = 'block';
-
-    fetchDepartmentData();
+    // Clear the form after submission
+    e.target.reset();
 });
 //fetch departments
 document.getElementById('getDepartmentButton').addEventListener('click', function () {
@@ -299,30 +283,29 @@ function deleteDepartment(button) {
         return;
     }
 
-    const confirmation = confirm(`Are you sure you want to delete department with ID ${id}?`);
-
-    if (confirmation) {
+    if (confirm(`Are you sure you want to delete department with ID ${id}?`)) {
         fetch(`/api/departments/${id}`, { 
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' }
         })
         .then(response => {
-            if (!response.ok) {
-                return response.json().then(errorData => Promise.reject(errorData));
-            }
+            if (!response.ok) return response.json().then(err => Promise.reject(err));
             return response.json();
         })
-        .then(data => {
+        .then(() => {
             alert(`Department with ID ${id} deleted successfully.`);
-            fetchEmployeeData(); 
+            location.reload(); // Refresh to update the list
         })
         .catch(error => {
-            alert(`Error: ${error.message || "Failed to delete Department."}`);
+            console.error("Delete Error:", error);
+            alert(`Error: ${error.message || "Failed to delete department."}`);
         });
-    } else {
-        alert("Deletion canceled. Department was not removed.");
     }
 }
+
+
+
+
 //update employee
 // Function to handle "Edit" button click
 function editEmployee(button) {
@@ -449,91 +432,131 @@ function fetchEmployeeData() {
 
 
 //Update Department
-// Function to handle "Edit" button click
-function editDepartment(button) {
-    const departmentId = button.getAttribute('data-id');
-    console.log("Clicked Edit Button for Department ID:", departmentId);
+document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("getDepartmentButton").addEventListener("click", function () {
+        fetchDepartmentData();
+    });
 
-    fetch(`http://localhost:5000/api/departments/${departmentId}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(result => {
-            console.log("Fetched Department Data:", result);
+    function fetchDepartmentData() {
+        fetch("http://localhost:5000/api/departments")
+            .then(response => response.json())
+            .then(result => {
+                const departmentTableContainer = document.getElementById("departmentTableContainer");
+                const updateDepartment = document.getElementById("updateDepartment");
 
-            if (result.department_id) {
-                // Populate the update form
-                document.getElementById('department_id').value = result.department_id;
-                document.getElementById('department_name').value = result.department_name;
-                console.log("Populated form with Department Data:", result);
-                console.log("Input Field Value After Populating:", document.getElementById('department_name').value);
-
-                // Show the update form
-                document.getElementById('updateDepartment').style.display = 'block';
-            } else {
-                alert('Department not found.');
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching department data:', error);
-            alert('An error occurred while fetching department data.');
-        });
-}
-
-// Log input field changes
-document.getElementById('department_name').addEventListener('input', function (event) {
-    console.log("Input Field Value Changed:", event.target.value);
-});
-
-// Handle update form submission
-document.getElementById('updateDepartmentForm').addEventListener('submit', function (event) {
-    event.preventDefault();
-
-    const departmentId = document.getElementById('department_id').value;
-    const departmentName = document.getElementById('department_name').value.trim();
-    console.log("Department Name from Input Field:", departmentName);
-
-    console.log("Submitting update for Department ID:", departmentId, "New Name:", departmentName);
-
-    if (!departmentName) {
-        alert("Department name cannot be empty.");
-        return;
+                if (departmentTableContainer && updateDepartment) {
+                    if (result.status === "success" && result.data.length > 0) {
+                        renderDepartmentTable(result.data);
+                        departmentTableContainer.style.display = "block";
+                        updateDepartment.style.display = "none";
+                    } else {
+                        alert("No departments found.");
+                        departmentTableContainer.style.display = "none";
+                    }
+                } else {
+                    console.error("One or more elements not found in the DOM.");
+                }
+            })
+            .catch(error => console.error("Error fetching department data:", error));
     }
 
-    const data = { department_name: departmentName };
-    console.log("Payload:", JSON.stringify(data));
-
-    fetch(`http://localhost:5000/api/departments/${departmentId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(result => {
-        console.log("Update Result:", result);
-        if (result.status === 'success') {
-            alert(result.message);
-            closeUpdateDepartmentForm();
-            fetchDepartmentData(); // Refresh department list
+    function renderDepartmentTable(departments) {
+        const tableBody = document.getElementById("departmentTableBody");
+        if (tableBody) {
+            tableBody.innerHTML = "";
+            departments.forEach(department => {
+                const row = document.createElement("tr");
+                row.setAttribute("data-id", department.department_id);
+                row.innerHTML = `
+                    <td>${department.department_id}</td>
+                    <td class="department-name">${department.department_name}</td>
+                    <td>
+                        <button class="Edit" data-id="${department.department_id}" onclick="editDepartment(this)">Edit</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
         } else {
-            alert(result.message);
+            console.error("Table body element not found in the DOM.");
         }
-    })
-    .catch(error => {
-        console.error('Error updating department:', error);
-        alert('An error occurred while updating the department.');
-    });
-});
+    }
 
-// Function to close the update form
-function closeUpdateDepartmentForm() {
-    document.getElementById('updateDepartment').style.display = 'none';
-}
+    function editDepartment(button) {
+        const departmentId = button.getAttribute("data-id");
+        fetch(`http://localhost:5000/api/departments/${departmentId}`)
+            .then(response => response.json())
+            .then(result => {
+                const updateDepartment = document.getElementById("updateDepartment");
+                if (updateDepartment) {
+                    if (result.status === "success" && result.data) {
+                        populateDepartmentForm(result.data);
+                        updateDepartment.style.display = "block";
+                    } else {
+                        alert('Department not found.');
+                    }
+                } else {
+                    console.error("Update department element not found in the DOM.");
+                }
+            })
+            .catch(error => console.error('Error fetching department data:', error));
+    }
+
+    function populateDepartmentForm(data) {
+        const updateDepartmentForm = document.getElementById('updateDepartmentForm');
+        if (updateDepartmentForm) {
+            updateDepartmentForm.reset();
+            document.getElementById('department_id').value = data.department_id;
+            document.getElementById('department_name').value = data.department_name;
+        } else {
+            console.error("Update department form not found in the DOM.");
+        }
+    }
+
+    document.getElementById('updateDepartmentForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const departmentId = document.getElementById('department_id').value;
+        const departmentName = document.getElementById('department_name').value.trim();
+
+        if (!departmentName) {
+            alert("Department name cannot be empty.");
+            return;
+        }
+
+        const currentDisplayedName = document.querySelector(`tr[data-id="${departmentId}"] .department-name`)?.textContent?.trim();
+        if (departmentName === currentDisplayedName) {
+            alert("No changes detected.");
+            return;
+        }
+
+        updateDepartment(departmentId, departmentName);
+    });
+
+    function updateDepartment(departmentId, departmentName) {
+        fetch(`http://localhost:5000/api/departments/${departmentId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ department_name: departmentName })
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.status === 'success') {
+                alert(result.message);
+                closeUpdateDepartmentForm();
+                fetchDepartmentData();
+            } else {
+                alert(result.message);
+            }
+        })
+        .catch(error => console.error('Error updating department:', error));
+    }
+
+    function closeUpdateDepartmentForm() {
+        const updateDepartment = document.getElementById("updateDepartment");
+        if (updateDepartment) {
+            updateDepartment.style.display = 'none';
+        } else {
+            console.error("Update department element not found in the DOM.");
+        }
+    }
+});
